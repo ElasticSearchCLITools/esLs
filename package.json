@@ -1,0 +1,25 @@
+{
+  "name": "estail",
+  "version": "0.8.0",
+  "description": "ElasticSearch Tail",
+  "main": "esTail.js",
+  "scripts": {
+    "test": "esTail.js"
+  },
+  "author": "Edward Perry",
+  "license": "ISC",
+  "dependencies": {
+    "colour": "^0.7.1",
+    "elasticsearch": "^8.2.0"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/eperry/esCLITools"
+  },
+  "keywords": [
+    "elasticsearch",
+    "elastic",
+    "ls"
+  ]
+}
