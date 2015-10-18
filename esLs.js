@@ -7,6 +7,7 @@ var elasticsearch = require('elasticsearch');
 var fs = require('fs');
 var colour = require('colour')
 var util = require('util');
+var listindexes=true;
 
 /**************************************************
 **
@@ -19,7 +20,7 @@ var hostport="localhost:9200"
 // set loglevel
 var loglevel="error"
 // show field
-var field="docs.num_docs"
+var field="docs.num_docs|index.size_in_bytes"
 /***************************************************
 **
 ** Setup
@@ -103,8 +104,10 @@ function getProperty(obj,f){
 		if ( response != undefined ){
 			//console.log("RESPONSE".red+JSON.stringify(response.indices,null,2).yellow)
 			for (var key in response.indices) {
-				obj = getProperty(response.indices[key],field);
-				console.log("INFO".red+key.blue+":"+field+"="+JSON.stringify(obj,null,2))
+				var fs = field.split(/\|/)
+				for (var i in fs){
+				    console.log(key+":"+fs[i]+"="+JSON.stringify(getProperty(response.indices[key],fs[i]),null,2))
+				}
 			}
 		}
 		console.log("STAT".red+JSON.stringify(status,null,2).blue)
