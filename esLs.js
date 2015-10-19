@@ -1,13 +1,13 @@
+#!/usr/bin/env node
 /**************************************************
 **
 ** Requirements
 **
 ***************************************************/
 var elasticsearch = require('elasticsearch');
-var fs = require('fs');
 var colour = require('colour')
-var util = require('util');
 var listindexes=true;
+var jsonPath = require('JSONPath');
 
 /**************************************************
 **
@@ -15,12 +15,13 @@ var listindexes=true;
 **
 ***************************************************/
 // Disable Info messages
-//console.info = function (){};
+console.info = function (){};
 var hostport="localhost:9200"
 // set loglevel
 var loglevel="error"
 // show field
-var field="docs.num_docs|index.size_in_bytes"
+var field="docs.num_docs"
+var rawoutput = false
 /***************************************************
 **
 ** Setup
@@ -38,10 +39,15 @@ process.argv.forEach(function (val, ind, array) {
         console.log("\t[--hostport="+hostport+"]");
         console.log("\t[--fetchsize='20'  default: 100 ");
         console.log("\t[--pretty  default: 0 ");
+	console.log("\t[--fields='"+field+"']");
+	console.log("\t[--raw default:false ]");
         process.exit(1)
     }
     if(val === "--pretty" ){
 	pretty=true;
+    }
+    if(val === "--raw" ){
+	rawoutput=true;
     }
     if(val.indexOf('=') >0){
         var s = val.split(/=/);
@@ -102,14 +108,17 @@ function getProperty(obj,f){
 			console.log("ERR".red+err.red);
 		}
 		if ( response != undefined ){
+			if (rawoutput){
+				console.log(JSON.stringify(response,null,2));
+			}
 			//console.log("RESPONSE".red+JSON.stringify(response.indices,null,2).yellow)
 			for (var key in response.indices) {
 				var fs = field.split(/\|/)
 				for (var i in fs){
-				    console.log(key+":"+fs[i]+"="+JSON.stringify(getProperty(response.indices[key],fs[i]),null,2))
+				    console.log(key+"."+fs[i]+"="+getProperty(response.indices[key],fs[i]))
 				}
 			}
 		}
-		console.log("STAT".red+JSON.stringify(status,null,2).blue)
+		console.info("STAT: ".red+JSON.stringify(status,null,2).blue)
 	})
 
