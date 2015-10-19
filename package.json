@@ -9,6 +9,7 @@
   "author": "Edward Perry",
   "license": "ISC",
   "dependencies": {
+    "JSONPath": "^0.10.0",
     "colour": "^0.7.1",
     "elasticsearch": "^8.2.0"
   },
