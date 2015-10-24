@@ -20,7 +20,8 @@ var hostport="localhost:9200"
 // set loglevel
 var loglevel="error"
 // show field
-var field="docs.num_docs"
+//var field="docs.num_docs"
+var field="num_docs"
 var rawoutput = false
 /***************************************************
 **
@@ -93,14 +94,30 @@ client.ping({
 ** Functions
 **
 *********************************************************************************/
-function getProperty(obj,f){
-    if( f.indexOf(".")>0){
-	fn = /(\w+)\.(.+)$/.exec(f)
-	return getProperty(obj[fn[1]],fn[2]);	
+function searchObj( obj, string, path ){
+    var ret = [];
+    for( var key in obj ) {
+        if(path === undefined )  p = key ;
+        else p = path+"."+key ;
+        
+        if( typeof obj[key] === 'object' ){
+             //console.log("++"+ret.toString());
+             r=searchObj( obj[key],string,p );
+             if ( r.length > 0 ) {
+                ret = ret.concat(r)
+             }
+        }
+        
+        if( key == string ){
+            o = { path: p, value: obj[key] };
+            //console.log(o)
+            ret.push(o);
+            
+        }
     }
-    return obj[f];
-		
+    return ret;
 }
+
 // Main search
 	console.info("Running search".blue);
 	client.indices.status(function (err, response, status){
@@ -111,14 +128,11 @@ function getProperty(obj,f){
 			if (rawoutput){
 				console.log(JSON.stringify(response,null,2));
 			}
-			//console.log("RESPONSE".red+JSON.stringify(response.indices,null,2).yellow)
-			for (var key in response.indices) {
-				var fs = field.split(/\|/)
-				for (var i in fs){
-				    console.log(key+"."+fs[i]+"="+getProperty(response.indices[key],fs[i]))
-				}
+			var fs = field.split(/\|/)
+			for (var i in fs){
+			    r=searchObj(response,fs[i])
+			    r.forEach( function ( key ){ console.log(key.path.red+"="+key.value)})
 			}
 		}
-		console.info("STAT: ".red+JSON.stringify(status,null,2).blue)
 	})
 
