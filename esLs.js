@@ -23,6 +23,7 @@ var loglevel="error"
 //var field="docs.num_docs"
 var field="num_docs"
 var rawoutput = false
+var showresponse = false
 /***************************************************
 **
 ** Setup
@@ -41,7 +42,8 @@ process.argv.forEach(function (val, ind, array) {
         console.log("\t[--fetchsize='20'  default: 100 ");
         console.log("\t[--pretty  default: 0 ");
 	console.log("\t[--fields='"+field+"']");
-	console.log("\t[--raw default:false ]");
+	console.log("\t[--raw default:false ] return a JSON formated result");
+	console.log("\t[--response default:false ] show the Elasticsearch response in json ");
         process.exit(1)
     }
     if(val === "--pretty" ){
@@ -49,6 +51,9 @@ process.argv.forEach(function (val, ind, array) {
     }
     if(val === "--raw" ){
 	rawoutput=true;
+    }
+    if(val === "--response" ){
+	showreponse=true;
     }
     if(val.indexOf('=') >0){
         var s = val.split(/=/);
@@ -107,7 +112,6 @@ function searchObj( obj, string, path ){
                 ret = ret.concat(r)
              }
         }
-        
         if( key == string ){
             o = { path: p, value: obj[key] };
             //console.log(o)
@@ -125,13 +129,12 @@ function searchObj( obj, string, path ){
 			console.log("ERR".red+err.red);
 		}
 		if ( response != undefined ){
-			if (rawoutput){
-				console.log(JSON.stringify(response,null,2));
-			}
+			if (showresponse) console.log(JSON.stringify(response,null,2));
 			var fs = field.split(/\|/)
 			for (var i in fs){
 			    r=searchObj(response,fs[i])
-			    r.forEach( function ( key ){ console.log(key.path.red+"="+key.value)})
+			    if ( rawoutput ) console.log(JSON.stringify(r,null,2)) 
+			    else r.forEach( function ( key ){ console.log(key.path.red+"="+key.value)})
 			}
 		}
 	})
