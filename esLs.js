@@ -58,8 +58,8 @@ process.argv.forEach(function (val, ind, array) {
     if(val.indexOf('=') >0){
         var s = val.split(/=/);
         console.info(s[0] + ' : ' + s[1]); 
-        if (s[0] === "--url" ){
-            url=s[1];
+        if (s[0] === "--hostport" ){
+            hostport=s[1];
         }
 	if (s[0] === "--loglevel" ){
 	    loglevel = s[1];
