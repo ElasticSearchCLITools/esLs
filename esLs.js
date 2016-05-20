@@ -15,13 +15,13 @@ var jsonPath = require('JSONPath');
 **
 ***************************************************/
 // Disable Info messages
-console.info = function (){};
+//console.info = function (){};
 var hostport="localhost:9200"
 // set loglevel
 var loglevel="error"
 // show field
 //var field="docs.num_docs"
-var field="num_docs"
+var field="count"
 var rawoutput = false
 var showresponse = false
 /***************************************************
@@ -58,8 +58,8 @@ process.argv.forEach(function (val, ind, array) {
     if(val.indexOf('=') >0){
         var s = val.split(/=/);
         console.info(s[0] + ' : ' + s[1]); 
-        if (s[0] === "--url" ){
-            url=s[1];
+        if (s[0] === "--hostport" ){
+            hostport=s[1];
         }
 	if (s[0] === "--loglevel" ){
 	    loglevel = s[1];
@@ -124,15 +124,14 @@ function searchObj( obj, string, path ){
 
 // Main search
 	console.info("Running search".blue);
-	client.indices.status(function (err, response, status){
-		if ( err != undefined ){
-			console.log("ERR".red+err.red);
-		}
+	client.indices.stats(function (err, response, status){
 		if ( response != undefined ){
+			//console.log(response)
 			if (showresponse) console.log(JSON.stringify(response,null,2));
 			var fs = field.split(/\|/)
 			for (var i in fs){
 			    r=searchObj(response,fs[i])
+			    console.log(r);
 			    if ( rawoutput ) console.log(JSON.stringify(r,null,2)) 
 			    else r.forEach( function ( key ){ console.log(key.path.red+"="+key.value)})
 			}
