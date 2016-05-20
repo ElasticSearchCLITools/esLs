@@ -53,7 +53,7 @@ process.argv.forEach(function (val, ind, array) {
 	rawoutput=true;
     }
     if(val === "--response" ){
-	showreponse=true;
+	showresponse=true;
     }
     if(val.indexOf('=') >0){
         var s = val.split(/=/);
